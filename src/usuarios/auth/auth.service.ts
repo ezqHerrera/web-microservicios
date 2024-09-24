@@ -1,7 +1,7 @@
 import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { UsuariosDto } from 'src/common';
+import { UsuariosDto } from 'src/usuarios/usuarios.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Usuarios } from 'src/usuarios/usuarios.entity';

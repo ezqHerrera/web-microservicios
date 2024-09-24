@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Usuarios } from './usuarios.entity';
 import { QueryFailedError, Repository } from 'typeorm';
 import { UsuariosDto } from './usuarios.dto';
-import { AuthService } from 'src/auth/auth.service';
+import { AuthService } from 'src/usuarios/auth/auth.service';
 
 @Injectable()
 export class UsuariosService {
@@ -50,4 +50,33 @@ export class UsuariosService {
         }
     }
 
+    /**
+     * @description Actualiza los datos de un usuario
+     * @param user Objeto parcial del DTO Usuario
+     * @param files Archivos de avatar del usuario
+     */
+    async updateUser(
+        id: number,
+        user: Partial<UsuariosDto>,
+        files: Express.Multer.File[],
+    ) {
+        try {
+            if (files.length > 0) {
+                user.avatar = files[0].filename;
+            }
+            const oldUser = await this.getOne(id);
+
+            const mergeUser = await this.repo.merge(oldUser, user);
+
+            const result = await this.repo.save(mergeUser);
+
+            return result;
+        } catch (error) {
+            console.error(error);
+            if (error instanceof QueryFailedError) {
+                throw new HttpException(`${error.name} ${error.driverError}`, 404);
+            }
+            throw new HttpException(error.message, error.status);
+        }
+    }
 }
